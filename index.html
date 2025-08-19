@@ -1,2 +1,459 @@
-<strong> hello</strong> world!!
-<iframe width="485" height="281" src="https://www.youtube.com/embed/UjzENV7rhhI" title="Emotions - Ariana Grande (Mariah Carey cover)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학습 도우미</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('YOUR_IMAGE_URL_HERE'); /* 여기에 배경 이미지 URL을 넣으세요 */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.3); /* 반투명 오버레이 */
+        }
+
+        .sidebar {
+            width: 350px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            position: relative;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+        }
+
+        .date-display {
+            font-size: 1.5em;
+            color: #2c3e50;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .time-display {
+            font-size: 1.1em;
+            color: #7f8c8d;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .schedule-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            transition: transform 0.2s ease;
+        }
+
+        .schedule-item:hover {
+            transform: translateX(5px);
+            background: #e3f2fd;
+        }
+
+        .schedule-item.current {
+            background: #e8f5e8;
+            border-left-color: #27ae60;
+            box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+        }
+
+        .period {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .subject {
+            color: #34495e;
+            font-size: 0.95em;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            margin-top: 10px;
+        }
+
+        .calendar-header {
+            background: #3498db;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .calendar-day {
+            background: #f8f9fa;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            min-height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-day:hover {
+            background: #e3f2fd;
+        }
+
+        .calendar-day.today {
+            background: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+
+        .calendar-day.other-month {
+            color: #bdc3c7;
+            background: #ecf0f1;
+        }
+
+        .timer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(52, 73, 94, 0.95);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .timer-display {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .timer-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: background 0.2s ease;
+        }
+
+        .timer-btn:hover {
+            background: #2980b9;
+        }
+
+        .timer-btn.reset {
+            background: #e74c3c;
+        }
+
+        .timer-btn.reset:hover {
+            background: #c0392b;
+        }
+
+        .welcome-message {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin: 50px auto;
+            max-width: 600px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .welcome-message h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .welcome-message p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="section">
+                <h2>📅 오늘 날짜</h2>
+                <div class="date-display" id="currentDate"></div>
+                <div class="time-display" id="currentTime"></div>
+            </div>
+
+            <div class="section">
+                <h2>📚 오늘의 시간표</h2>
+                <div id="schedule">
+                    <div class="schedule-item" data-period="1">
+                        <span class="period">1교시</span>
+                        <span class="subject">예배</span>
+                    </div>
+                    <div class="schedule-item" data-period="2">
+                        <span class="period">2교시</span>
+                        <span class="subject">수학2</span>
+                    </div>
+                    <div class="schedule-item" data-period="3">
+                        <span class="period">3교시</span>
+                        <span class="subject">영어</span>
+                    </div>
+                    <div class="schedule-item" data-period="4">
+                        <span class="period">4교시</span>
+                        <span class="subject">세계지리</span>
+                    </div>
+                    <div class="schedule-item" data-period="5">
+                        <span class="period">5교시</span>
+                        <span class="subject">독서</span>
+                    </div>
+                    <div class="schedule-item" data-period="6">
+                        <span class="period">6교시</span>
+                        <span class="subject">물리학</span>
+                    </div>
+                    <div class="schedule-item" data-period="7">
+                        <span class="period">7교시</span>
+                        <span class="subject">정보</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📆 이번 달 달력</h2>
+                <div class="calendar" id="calendar"></div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="welcome-message">
+                <h1>학습 도우미</h1>
+                <p>오늘도 열심히 공부해보세요! 💪</p>
+            </div>
+        </div>
+
+        <div class="timer">
+            <div class="timer-display" id="timerDisplay">00:00:00</div>
+            <div class="timer-controls">
+                <button class="timer-btn" id="startBtn">시작</button>
+                <button class="timer-btn" id="pauseBtn">일시정지</button>
+                <button class="timer-btn reset" id="resetBtn">리셋</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 현재 시간과 날짜 업데이트
+        function updateDateTime() {
+            const now = new Date();
+            const dateOptions = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            };
+            const timeOptions = { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit'
+            };
+            
+            document.getElementById('currentDate').textContent = 
+                now.toLocaleDateString('ko-KR', dateOptions);
+            document.getElementById('currentTime').textContent = 
+                now.toLocaleTimeString('ko-KR', timeOptions);
+        }
+
+        // 달력 생성
+        function generateCalendar() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const today = now.getDate();
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+            
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+            
+            // 요일 헤더
+            const days = ['일', '월', '화', '수', '목', '금', '토'];
+            days.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-header';
+                dayHeader.textContent = day;
+                calendar.appendChild(dayHeader);
+            });
+            
+            // 이전 달의 날짜들
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day other-month';
+                dayDiv.textContent = daysInPrevMonth - i;
+                calendar.appendChild(dayDiv);
+            }
+            
+            // 현재 달의 날짜들
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day';
+                if (day === today) {
+                    dayDiv.classList.add('today');
+                }
+                dayDiv.textContent = day;
+                calendar.appendChild(dayDiv);
+            }
+            
+            // 다음 달의 날짜들
+            const totalCells = 42; // 6주 × 7일
+            const usedCells = firstDay + daysInMonth;
+            for (let day = 1; usedCells + day - 1 < totalCells; day++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day other-month';
+                dayDiv.textContent = day;
+                calendar.appendChild(dayDiv);
+            }
+        }
+
+        // 현재 교시 하이라이트
+        function highlightCurrentPeriod() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            const currentTime = currentHour * 60 + currentMinute;
+            
+            // 교시별 시간 (대략적인 시간)
+            const periods = [
+                { start: 8 * 60 + 30, end: 9 * 60 + 20 },   // 1교시
+                { start: 9 * 60 + 30, end: 10 * 60 + 20 },  // 2교시
+                { start: 10 * 60 + 30, end: 11 * 60 + 20 }, // 3교시
+                { start: 11 * 60 + 30, end: 12 * 60 + 20 }, // 4교시
+                { start: 13 * 60 + 30, end: 14 * 60 + 20 }, // 5교시
+                { start: 14 * 60 + 30, end: 15 * 60 + 20 }, // 6교시
+                { start: 15 * 60 + 30, end: 16 * 60 + 20 }  // 7교시
+            ];
+
+            document.querySelectorAll('.schedule-item').forEach((item, index) => {
+                item.classList.remove('current');
+                if (currentTime >= periods[index].start && currentTime <= periods[index].end) {
+                    item.classList.add('current');
+                }
+            });
+        }
+
+        // 타이머 기능
+        let timerSeconds = 0;
+        let timerInterval = null;
+        let isRunning = false;
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timerDisplay').textContent = formatTime(timerSeconds);
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                timerInterval = setInterval(() => {
+                    timerSeconds++;
+                    updateTimerDisplay();
+                }, 1000);
+                document.getElementById('startBtn').textContent = '실행중';
+                document.getElementById('startBtn').style.background = '#27ae60';
+            }
+        }
+
+        function pauseTimer() {
+            if (isRunning) {
+                isRunning = false;
+                clearInterval(timerInterval);
+                document.getElementById('startBtn').textContent = '시작';
+                document.getElementById('startBtn').style.background = '#3498db';
+            }
+        }
+
+        function resetTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            timerSeconds = 0;
+            updateTimerDisplay();
+            document.getElementById('startBtn').textContent = '시작';
+            document.getElementById('startBtn').style.background = '#3498db';
+        }
+
+        // 이벤트 리스너
+        document.getElementById('startBtn').addEventListener('click', startTimer);
+        document.getElementById('pauseBtn').addEventListener('click', pauseTimer);
+        document.getElementById('resetBtn').addEventListener('click', resetTimer);
+
+        // 초기화 및 정기 업데이트
+        function init() {
+            updateDateTime();
+            generateCalendar();
+            highlightCurrentPeriod();
+            updateTimerDisplay();
+            
+            // 매초 시간 업데이트
+            setInterval(updateDateTime, 1000);
+            // 매분 현재 교시 확인
+            setInterval(highlightCurrentPeriod, 60000);
+        }
+
+        // 페이지 로드시 초기화
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
